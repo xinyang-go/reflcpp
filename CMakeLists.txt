@@ -1,0 +1,42 @@
+cmake_minimum_required(VERSION 3.12)
+
+project(reflcpp)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_library(reflcpp INTERFACE)
+add_library(reflcpp::reflcpp ALIAS reflcpp)
+target_include_directories(reflcpp INTERFACE include)
+
+option(REFLCPP_WITH_YAMLCPP "reflcpp with yaml-cpp" ON)
+find_package(yaml-cpp)
+if(yaml-cpp_FOUND AND REFLCPP_WITH_YAMLCPP)
+    message("reflcpp with yamlcpp")
+    target_compile_definitions(reflcpp INTERFACE REFLCPP_WITH_YAMLCPP)
+    target_link_libraries(reflcpp INTERFACE ${YAML_CPP_LIBRARIES})
+    target_include_directories(reflcpp INTERFACE ${YAML_CPP_INCLUDE_DIR})
+else()
+    message("reflcpp without yamlcpp")
+endif()
+
+option(REFLCPP_WITH_SERIALIZATION "reflcpp with boost::serialization" ON)
+find_package(Boost COMPONENTS serialization)
+if(Boost_serialization_FOUND AND REFLCPP_WITH_SERIALIZATION)
+    message("reflcpp with boost::serialization")
+    target_compile_definitions(reflcpp INTERFACE REFLCPP_WITH_SERIALIZATION)
+    target_link_libraries(reflcpp INTERFACE Boost::serialization)
+else()
+    message("reflcpp without boost::serialization")
+endif()
+
+option(REFLCPP_WITH_FMT "reflcpp with libfmt" ON)
+find_package(fmt)
+if(fmt_FOUND AND REFLCPP_WITH_FMT)
+    message("reflcpp with libfmt")
+    target_compile_definitions(reflcpp INTERFACE REFLCPP_WITH_FMT)
+    target_link_libraries(reflcpp INTERFACE fmt::fmt)
+else()
+    message("reflcpp without libfmt")
+endif()
+
+add_subdirectory(example)

@@ -1,0 +1,8 @@
+# vscode
+.vscode
+.cache
+build
+
+# clion
+.idea
+cmake-build-*
