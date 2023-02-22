@@ -5,6 +5,7 @@
 #include "reflcpp/core.hpp"
 #include "reflcpp/serialization.hpp"
 #include "reflcpp/yaml.hpp"
+#include "reflcpp/runtime.hpp"
 
 struct Creature {
     std::string type;
@@ -98,9 +99,36 @@ void example_reflcpp_serialization() {
     }
 }
 
+void example_runtime() {
+    Person bob;
+    bob.name = "Bob";
+    bob.age = 22;
+    bob.score = 100;
+    bob.type = "person";
+    // runtime set field
+    std::cout << "==== runtime set field 'score' to 90 ====" << std::endl;
+    reflcpp::runtime::field_set(bob, "score", 90);
+    std::cout << "bob.score: " << bob.score << std::endl;
+
+    /*
+     * the following code will throw std::bad_any_cast
+     * because field 'score' needs int, while 90.0 is double
+     */
+    // reflcpp::runtime::field_set(bob, "score", 90.0);
+    
+    // runtime get field
+    // reflcpp::runtime::field_get() will return a std::any
+    // which is a copy of original field value
+    std::cout << "==== runtime get field 'age' ====" << std::endl;
+    auto var = reflcpp::runtime::field_get(bob, "age");
+    std::cout << "bob.age: " << std::any_cast<int>(var) << std::endl;
+}
+
 int main() {
     example_reflcpp_core();
     example_reflcpp_yaml();
     example_reflcpp_serialization();
+    example_runtime();
+
     return 0;
 }
