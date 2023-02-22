@@ -38,7 +38,8 @@ namespace reflcpp::utils {
     constexpr void tuple_foreach_impl(T &&tuple, F &&func, std::index_sequence<Idx...>) {
         [[maybe_unused]] auto result = (
             [&]() {
-                if constexpr (std::is_same_v<std::invoke_result_t<F, std::tuple_element_t<Idx, T>>, foreach_stop>) {
+                using R = std::invoke_result_t<F, std::tuple_element_t<Idx, T>>;
+                if constexpr (std::is_same_v<R, foreach_stop>) {
                     return std::invoke(std::forward<F>(func), std::get<Idx>(std::forward<T>(tuple))).value;
                 } else {
                     std::invoke(std::forward<F>(func), std::get<Idx>(std::forward<T>(tuple)));
@@ -82,12 +83,14 @@ namespace reflcpp {
     };
 
     template<typename T>
-    constexpr std::enable_if_t<is_reflectable_v<T>, std::size_t> bases_size() {
+    constexpr std::enable_if_t<is_reflectable_v<T>, std::size_t> 
+    bases_size() {
         return std::tuple_size_v<decltype(metainfo<T>::bases())>;
     }
 
     template<typename T>
-    constexpr std::enable_if_t<is_reflectable_v<T>, std::size_t> fields_size(Access access) {
+    constexpr std::enable_if_t<is_reflectable_v<T>, std::size_t> 
+    fields_size(Access access) {
         std::size_t size = 0;
         if (access & Public) {
             size += std::tuple_size_v<decltype(metainfo<T>::public_fields())>;
@@ -102,12 +105,14 @@ namespace reflcpp {
     }
 
     template<typename T, typename F>
-    constexpr std::enable_if_t<is_reflectable_v<T>, void> bases_foreach(F &&func) {
+    constexpr std::enable_if_t<is_reflectable_v<T>, void> 
+    bases_foreach(F &&func) {
         utils::tuple_foreach(metainfo<T>::bases(), std::forward<F>(func));
     }
 
     template<typename T, typename F>
-    constexpr std::enable_if_t<is_reflectable_v<T>, void> fields_foreach(F &&func, Access access = Access::All) {
+    constexpr std::enable_if_t<is_reflectable_v<T>, void> 
+    fields_foreach(F &&func, Access access = Access::All) {
         if (access & Public) {
             utils::tuple_foreach(metainfo<T>::public_fields(), std::forward<F>(func));
         }
@@ -120,7 +125,8 @@ namespace reflcpp {
     }
 
     template<typename T, typename F>
-    constexpr std::enable_if_t<is_reflectable_v<T>, void> bases_foreach_recursive(F &&func) {
+    constexpr std::enable_if_t<is_reflectable_v<T>, void> 
+    bases_foreach_recursive(F &&func) {
         utils::tuple_foreach(metainfo<T>::bases(), [&](auto base) {
             using BaseType = typename decltype(base)::type;
             std::invoke(std::forward<F>(func), base);
@@ -131,12 +137,13 @@ namespace reflcpp {
     }
 
     template<typename T, typename F>
-    constexpr std::enable_if_t<is_reflectable_v<T>, void> fields_foreach_recursive(F &&func, Access access = Access::All) {
+    constexpr std::enable_if_t<is_reflectable_v<T>, void> 
+    fields_foreach_recursive(F &&func, Access access = Access::All) {
         fields_foreach<T>(std::forward<F>(func), access);
         bases_foreach<T>([&](auto base) {
             using BaseType = typename decltype(base)::type;
             if constexpr (is_reflectable_v<BaseType>) {
-                fields_foreach<BaseType>(std::forward<F>(func), access);
+                fields_foreach_recursive<BaseType>(std::forward<F>(func), access);
             }
         });
     }
@@ -214,8 +221,6 @@ namespace reflcpp {
             std::forward<C>(obj).f = std::forward<T>(value);                    \
         }                                                                       \
     };
-
-#define REFLCPP_METAINFO_ADDITION(r, data, func) BOOST_PP_CAT(REFLCPP_, func) data
 
 #ifndef REFLCPP_YAML
 #define REFLCPP_YAML(...)

@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef REFLCPP_WITH_SERIALIZATION
-#error "reflcpp without boost::serialization"
-#endif
-
 #include <boost/serialization/base_object.hpp>
 
 #include "core.hpp"

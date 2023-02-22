@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef REFLCPP_WITH_YAMLCPP
-#error "reflcpp without yaml-cpp"
-#endif
-
 #include <yaml-cpp/yaml.h>
 
 #include "core.hpp"
