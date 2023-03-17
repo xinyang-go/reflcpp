@@ -8,4 +8,7 @@ add_library(reflcpp INTERFACE)
 add_library(reflcpp::reflcpp ALIAS reflcpp)
 target_include_directories(reflcpp INTERFACE include)
 
-add_subdirectory(example)
+option(REFLCPP_BUILD_EXAMPLE "reflcpp example" OFF)
+if(REFLCPP_BUILD_EXAMPLE)
+    add_subdirectory(example)
+endif()
