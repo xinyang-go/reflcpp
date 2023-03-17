@@ -157,7 +157,7 @@ namespace reflcpp {
 #define REFLCPP_METAINFO_2(Class, Bases)         REFLCPP_METAINFO_5(Class, Bases, Public, , )
 #define REFLCPP_METAINFO_3(Class, Bases, Public) REFLCPP_METAINFO_5(Class, Bases, Public, , )
 #define REFLCPP_METAINFO_5(Class, Bases, Public, Protected, Private)            \
-    template<> constexpr bool reflcpp::is_reflectable_v<Class> = true;          \
+    template<> constexpr inline bool reflcpp::is_reflectable_v<Class> = true;   \
     BOOST_PP_SEQ_FOR_EACH_I(REFLCPP_METAINFO_BASEINFO, Class, Bases)            \
     BOOST_PP_SEQ_FOR_EACH_I(REFLCPP_METAINFO_FIELDINFO, Class, Public)          \
     BOOST_PP_SEQ_FOR_EACH_I(REFLCPP_METAINFO_FIELDINFO, Class, Protected)       \
@@ -189,9 +189,7 @@ namespace reflcpp {
         return std::make_tuple(                                                 \
             BOOST_PP_SEQ_FOR_EACH_I(REFLCPP_METAINFO_FIELD, Class, Private)     \
         );                                                                      \
-    }                                                                           \
-    REFLCPP_YAML(Class);                                                        \
-    REFLCPP_SERIALIZATION(Class);
+    }
 
 #define REFLCPP_METAINFO_BASE(r, c, i, b)  BOOST_PP_COMMA_IF(i) baseinfo<b>{}
 #define REFLCPP_METAINFO_FIELD(r, c, i, f) BOOST_PP_COMMA_IF(i) fieldinfo<&c::f>{}
@@ -221,11 +219,3 @@ namespace reflcpp {
             std::forward<C>(obj).f = std::forward<T>(value);                    \
         }                                                                       \
     };
-
-#ifndef REFLCPP_YAML
-#define REFLCPP_YAML(...)
-#endif 
-
-#ifndef REFLCPP_SERIALIZATION
-#define REFLCPP_SERIALIZATION(...)
-#endif 

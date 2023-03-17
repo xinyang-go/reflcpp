@@ -18,9 +18,6 @@ serialize(Archive &ar, T &obj, const unsigned int version) {
 }
 } // namespace reflcpp::serialization
 
-#ifdef REFLCPP_SERIALIZATION
-#undef REFLCPP_SERIALIZATION
-#endif
 #define REFLCPP_SERIALIZATION(Class, ...)                                       \
     namespace boost::serialization {                                            \
         template<typename Archive>                                              \

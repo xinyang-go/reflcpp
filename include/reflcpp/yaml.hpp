@@ -25,9 +25,6 @@ namespace reflcpp::yaml {
     }
 }
 
-#ifdef REFLCPP_YAML
-#undef REFLCPP_YAML
-#endif
 #define REFLCPP_YAML(Class, ...)                                                \
     template<> struct YAML::convert<Class> {                                    \
         static Node encode(const Class &obj) {                                  \
